@@ -1,0 +1,288 @@
+<리디북스>
+https://youtu.be/6BG6O5F5dIs?si=7vrPEyfKLUGx2i9I
+통째로 react 전환하는 것은 위험 - 페이지 단위로 하나하나 converting
+리팩토링의 필요성 : 프론트엔드 기술 스택을 하나로 통합하여 생산성, 유지보수성 향상
+리액트 선택 이유 : 기존 리액트가 차지하는 비중이 많았음, 자체가 생산성, 유지보수성이 높다고 생각함
+    사용자도 많음 - 채용 풀 큼
+리팩토링 스타일 관리 : Emotion - 스타일 충돌하는 부분 해결 가능, 재사용성 높아짐
+리팩토링 테스트 : react-test-renderer 사용
+    - unit test 뿐만 아닌 component test도 해야 하는데 불편사항 발생
+    - React Testing Library 사용
+디렉토리 관리 :
+    pages 디렉토리 - url에 대응되는 페이지
+    components 디렉토리 : 도메인별로 나누어져 있음, 공통 컴포넌트는 common 디렉토리로
+    hooks 디렉토리 : 공통으로 사용되는 hook 모아놓음
+    한 곳에서만 사용되는 hook은 해당 도메인 디렉토리 내에 존재함
+리액트의 불편함 : hook이 side effext 발생시킬 수 있음
+    최적화 위해 useRef나 useMemo 사용해야 함
+최근 리액트는 class component로 개발하지는 않음, 모든 컴포넌트는 function으로 개발
+
+https://youtu.be/ofBhjQZeC0o?si=YcKKtOYE_Giii4BK
+Next.js 통해서 서버사이드 렌더링
+모든 페이지가 캐싱되고 있는 건 아님 - 홈 화면에만 캐싱 적용되어 있음. 개인정보 관련 페이지는 캐싱하면 위험
+기존 : 서버리스 구조로 서비스 - 결과물을 메모리와 Redis에 캐싱 후 서비스 - 빠름
+로그인 유무에 따른 화면 차이 처리 : 다른 요소가 별로 없음, 두 가지 버전 다 캐싱해서 서비스
+    SSR 사용시 서버에 부하 가능성 -> CSR로 비동기 처리
+    같은 페이지를 띄운 뒤 요청을 새로 해서 정보 받아옴
+배포 : AWS의 ECS 사용 - 개발자가 Dockerline만 세팅하면 github action 통해서 자동 배포됨
+    Auto Scailing 걸려있음 - 점진적 트래픽에 대해서는 잘 동작, 한번에 오면 못 버팀 - 스케줄링
+API 요청에 관한 상태 관리 : Redux Toolkit, API http 클라이언트는 Axios 통해서 API와 통신
+
+https://youtu.be/FM5yyBaqqcg?si=3qXOP3tr_gs9n75-
+RN 선택 이유 : 개발자 수가 많음, 라이브러리도 많음
+단점 : 모듈 중 문제가 되는 것이 있음 ex - ScrollView, FlatList 등 스크롤 관련 모듈
+장점 : 개발 빨리 함, os, ios 사용자 한 번에 모을 수 있음
+Redux Middleware로 Thunk 사용 이유 : 명확성
+
+https://youtu.be/exf4enLbVm4?si=wOHnTkEM5PQVrZ40
+모바일 웹과 앱이 공유되는 코드가 있음, 다 공유하지는 않음 - 잘못되었을 때 일이 커지기 때문
+디렉토리 관리 :
+    components/ : UI 모듈들을 구조화해서 관리하는 최상위 디렉토리
+    ducks/ : Redux 관리
+atomic design pattern : 5단계로 나누어서 구조화 - 단계 개수는 원하는대로
+    1. atom : 컴포넌트 하나가 단순한 한 가지 기능 담당
+    2. blocks : atom, pages가 아닌 나머지
+    3. pages : 가장 큰 것, 화면 하나
+CMS 사이트도 리액트로 만듦
+UI : Material-UI 이용해서 개발함
+풀스택 단점 : 프론트엔드, 백엔드, 운영업무 등 절대적인 업무량, 공부할 것이 많다.
+풀스택 장점 : 나무가 아닌 숲을 볼 수 있다. 프론트/백엔드 간 병목 현상(bottleneck) 줄일 수 있음
+개발 철학 : 중복 코드를 쓰지 않는다. 추상화
+
+https://youtu.be/scZI19SE0_4?si=GbXSaegT5d-WAfG_
+리액트 네이티브 도입 이유 : 변화에 대응하기 위함
+iOS : 리액트 네이티브는 objC 기반이므로 swift 기능 사용 어려움
+OS : java -> Kotlin 일대일 매핑이 가능해 어렵지는 않았지만 Code Push CLI에서 충돌하는 부분 존재
+디펜던시 충돌 이슈 : 리액트 네이티브와 네이티브가 겹쳤지만 문제는 없어서 그대로 진행
+현재 네이티브와 RN 코드가 공존함
+네이티브 위에 RN 올리기 : 기존 코드 안정성 보장, 여러 화면일 때 상태관리가 복잡함 - 불필요
+RN 위에 네이티브 올리기 : 최종적으로 RN으로 넘어갈 것이었으므로 이게 맞다고 생각함
+    다만 네이티브가 불안정, 기존 라이프 사이클 점검 필요
+RN에서 네이티브 뷰 래핑하여 리액트로 쓸 수 있게 하는 스펙이 있어 그거 사용함
+RN의 단점 : 서드파티 라이브러리 완성도 - 편향성이 있음, 완성도 천차만별
+    ex. 안드에서만 퀄리티가 높은 프로젝트
+RN의 장점 : 생산성 - 코드 베이스 하나로 여러 플랫폼 개발 가능
+    hot-reload 이용하여 즉시 피드백 가능 - 빌드 타임 줄여 생산성에 직결
+    안드, iOS 크로스 플랫폼으로 개발하여 한 가지 기획으로 관리 가능
+    Code Push : 사람 목숨 살리는 기능
+
+https://youtu.be/aRdUZ8vHcBQ?si=JkAxZPsYsBGtDwop
+RN 도입에서 어려웠던 점 : 메모리 사용량이 3~5배 많아짐 - 메모리 부족으로 문제 발생
+    해결 : 뷰어는 RN과 독립적인 화면으로써 분리되어 있음
+    - RN에서는 자신 위를 뷰어가 덮고 있는지 알 수 없음
+    뷰 구조상으로는 이미 화면을 덮었기 때문에 렌더링은 안 되고 있지만 메모리는 점유 중이었던 것
+    - 뷰어가 열려있으면 리소스 정리하여 해결
+상태 관리 : 네이티브와 RN 간의 관리가 필요했음
+    1. redux 2. Context API 3. Recoil (심플하지만 오류) 4(최종). Context API & React Quary
+    네트워크 상태 관리 필요 X, Context API에서 무겁게 다루던 API 응답 덜어냄
+네이티브와 RN 섞어 사용함에 따라 유지보수 어려움 발생
+
+<코딩애플>
+https://youtu.be/RtvSgptpfnY?si=0l4rJii2OEQ5_frj Web Component 정리
+Web Component 사용하면 리액트 등 라이브러리 없이 바닐라 JS로도 컴포넌트로 묶기 가능
+깃허브가 이 방법으로 개발됨 - 10년 후엔 리액트 안 쓸 텐데 먼저 안 썼다
+
+https://youtu.be/VJag_H2Cosc?si=Ux9nzZS1TEaAfsn8 Redux 정리
+Redux : 상태관리 라이브러리
+쓰는 이유 : props 문법 귀찮을 때, 상태 변경 관리할 때 사용
+하위 컴포넌트는 상위 컴포넌트의 변수를 바로 사용할 수 없다.
+    여러 개 중첩되어 있으면 하나하나 상태를 전해주어야 하기 때문에 props가 많이 필요하다.
+redux 설치 후 상태 보관하는 파일 만들 수 있음 (ex. store.js)
+    이 안에 보관한 상태는 모든 컴포넌트가 사용 가능
+redux 스타일 상태 수정 방법 : store.js에 모든 상태 수정 방법을 미리 정의해놓기
+    이후 컴포넌트에서는 수정하고 싶을 때 store.js에 요청만 할 수 있음
+    장점 : 버그 추적이 쉬움 (store.js가 항상 범인)
+    여기서 상태 수정 방법에 해당하는 코드를 reducer라고 부름
+큰 리액트 프로젝트에서는 거의 항상 redux 사용
+
+https://youtu.be/xkpcNolC270?si=1gRW4oA3GZk6WT4u 타입스크립트 정리
+타입스크립트 : JS + Type문법 - JS 업그레이드 버전
+JS는 dynamic typing 기능 있음 - 숫자랑 문자열 연산 가능 (자유도, 유연성) -> 좋은 게 아님
+    TS에서 이런 타입을 꼼꼼히 검사해줌.
+에러 메시지 퀄리티가 좋음 ex. 맞춤법 틀린것도 찾아줌
+TS는 코드 에디터 부가기능 정도로 볼 수도 있음
+설치(리액트 미사용시) : 1.Node.js 설치 2. 터미널에 npm install -g typescript
+폴더에 tsconfig.json 생성 후 내용 작성
+ts 파일을 js 파일로 변환해주어야 함 -> 터미널에 tsc -w 입력해두면 자동변환됨
+나중에 파일 사용할 때는 js 파일 사용하면 됨
+[문법 정리]
+변수 선언 시 let 변수 :string = 'abc' 하면 이 변수엔 문자열만 가능
+let 변수 :string[] = ['abc'] 하면 이 변수엔 문자열만 들어있는 배열만 가능
+let 변수 :{ name : string } = { name : 'abc' } 하면 문자열만 들어있는 오브젝트만 가능
+name -> name?으로 바꾸면 절대적이지 않은 옵션으로 바꿀 수 있음
+여러 타입을 사용하려면 or (|) 사용함 - Union type
+type Name = string | number 와 같이 타입 저장할 수도 있음
+함수에서도 타입 지정 가능 - function 함수(x:number) :number {return x*2}
+
+https://youtu.be/-iZlNnTGotk?si=IPbK2T-VjKpAL_nr 콜백함수 정리
+콜백함수 : 함수 안에 파라미터로 들어가는 함수
+용도 : 순차적으로 코드를 실행하고 싶을 때 사용
+ex. document.querySelector('.button').addEventListener('click',function(){})
+    여기서 addEventListener도 함수, function도 함수 - function이 콜백함수
+    버튼을 클릭했을 때 addEventListener 실행되고, 이후 function 실행됨 - 순차적
+다른데서 만든 함수도 콜백함수로 사용 가능, function 함수명 (){} 식으로 작명도 가능 (쓸데는 없음)
+간단한 콜백함수 만들기 : function first(파라미터){파라미터()}
+    파라미터 자리에 내가 선언한 다른 함수명 넣으면 순차적으로 실행됨
+용도(심화) : 순차적으로 사용할 코드가 비슷하게 여러 개 있을 때
+대체제 ; promise(then), async await
+
+https://youtu.be/NoLV5iP5FNY?si=Je6kJo0MgxanvSM5 서버 정리
+서버 : 레스토랑의 서버와 같은 의미, 요청을 받으면 요청한 내용 보내주는 프로그램
+http 요청 : 읽기(GET), 쓰기(POST), 수정(PUT), 삭제(DELETE)
+
+https://youtu.be/pTm5E3jcOeY?si=LZe7PczEIMsgwCEX Node.js 정리
+JavaScript : html 페이지에 종속된 언어, html 위해 만들어진 언어
+    html 조작이 가능하기 떄문에 다이나믹한 웹페이지 디자인 가능
+html : 웹 페이지 만들기 위해 만들어진 언어
+자바스크립트는 누가 동작시키나? (해석은 누가 하나) - 브라우저가 함
+브라우저 내에 js 해석 엔진이 있음 - 크롬(V8) 파폭(spidermonkey) 익스(chakra)
+크롬 V8이 너무 좋아서 따로 출시하게 됨 - Node.js
+따라서 Node.js는 사실 크롬의 js 해석 엔진으로 이루어져 있음
+브라우저 내에서 말고 다른 환경에서도 js 실행할 수 있게 도와줌
+    쉽게 말하면 자바스크립트 실행창, 실행 환경
+    따라서 node.js 설치하면 브라우저 안 켜도 js 문법 실행 가능
+Node.js 덕분에 js를 프로그래밍 언어처럼 사용할 수 있음
+서버도 만들 수 있음 - 쉬움, Non-blocking I/O
+
+https://youtu.be/k2GWnDb5zoQ?si=Jpdwmhe5cTxva5Jh Node.js 정리 2
+Node.js 특징 : Event-Driven, Non-blocking I/O
+Non-blocking I/O : 요청 받는 것을 멈추지 않음
+    모든 요청 받고 빨리 처리되는 요청부터 먼저 처리
+    요청이 많거나 오래 걸리는 요청이 있어도 멈춤이나 대기시간 없음
+Node.js 사용하지 않는 서버도 위 기능 가능하긴 함 - Scailing (요청 받는 창구를 늘리는 것)
+Node.js 장점 : 코드가 짧고 쉬워서 빠른 개발 가능
+
+https://youtu.be/n-Ae22bpNWU?si=GMVJGabNT35TRB7f Node.js 정리 3
+터미널 : 내 PC와 소통하는 창
+cmd에서 node 입력하면 node 사용 가능 - 자바스크립트 런타임 (실행창)
+express 라이브러리 설치 - 서버를 쉽게 만들 수 있게 도와줌
+npm install express
+라이브러리 : 코드를 쉽게 짜기 위해 빌려쓰는 코드 모음집
+npm : 라이브러리 설치를 도와주는 도구
+package.json : 어떤 라이브러리 설치했는지 기록
+npm init : package.json 만들어줌, 엔트리 포인트만 내가 원하는 파일명으로
+라이브러리 설치 순간 node_modules라는 폴더 생성됨 - 라이브러리 관련 파일 담고 있음
+
+https://youtu.be/HeOh-go-fYY?si=3fDZ1GBSHDnc7_Qk Node + Express로 서버 열기
+port : 내 컴퓨터가 외부와 연결되기 위한 통로
+node 파일이름 으로 열 수 있음 -> localhost:서버번호 로 들어감
+url에 부가적인 주소 넣는 것 : get요청 할 수 있는 방법
+
+https://youtu.be/Yn4fUo1i1-s?si=jhH0BINPQKtivLKm Node.js 서버
+고객(Client) : url 입력해서 서버에 get요청
+서버 : 누군가 해당 url로 들어오면 실행할 코드 짬
+서버 재실행 자동화 : nodemon
+npm install -g nodemon 
+-g : 내 컴퓨터의 모든 폴더에서 사용할 수 있게 설치해달라. = yarn add global
+nodemon Node.js - 오류시 powershell 관리자 권한으로 실행
+url에 / 하나만 붙으면 홈
+
+Web-App : 새로고침 없이 사용하는, 모바일앱과 비슷한 사용감을 주는 웹
+    - React, Angular, Vue
+    장점 : 모바일앱으로 발행이 쉬움, 앱처럼 뛰어난 UX
+
+https://youtu.be/ckSdPNKM2pY?si=xKwYz2vcDgjeId_Q API
+API : Application Programming Interface
+    한 프로그램에서 다른 프로그램으로 데이터를 주고받기 위한 방법(코드)
+메뉴판은 식당의 API - 식당과 손님이 음식 주고받기 위한 방법
+앱/웹서비스에서의 API : 서버와 클라이언트 사이의 메뉴판
+app.get('url', function()) - 이 url로 get요청하면 안에 있는 코드 실행
+    app.get 이 부분이 API
+API에 들어가야 하는 것 : 요청방식(get 등등), 어떤 자료 요청할지(웹툰), 파라미터(추가정보, 몇화)
+브라우저의 주소 입력란이 대표적인 API 요청하는 곳(get요청)
+public - 공개, private - 사내, partner - 미리 정한 사람만 사용
+Windows API : 윈도우 운영체제 기능들 사용가능
+
+
+https://youtu.be/yY5zUp1J-iI?si=YGL49LwQztkvEMSF 백엔드에 대하여
+백엔드 : 데이터 저장 및 관리
+백엔드 프로그래밍 언어 : 컴퓨터를 서버로 바꿔서 메시지를 수신할 수 있도록 해줌
+    - JavaScript, Python 등등, 근데 이것만 사용하면 코드가 길어짐
+    - 백엔드 프레임워크와 패키지 매니저 사용
+백엔드 프레임워크 : 적은 코드로 서버 쉽게 만들어 줌
+    JavaScript - ExpressJS
+    python - django
+    Ruby - Ruby on Rails
+    Java - Spring
+패키지 : 다른 사람들이 작성한 코드 - 계산, 데이터베이스 접근, 로그인 관리 등에 사용
+패키지 매니저 : 패키지 설치 및 관리하기 위해 사용
+    JavaScript - npm
+    python - pip
+    Java - Maven
+데이터 : 회원정보, 주문목록, 상품정보 등
+데이터베이스 : 다른 컴퓨터에서 실행되는 소프트웨어 - 내 pc가 db와 통신할 수 있도록 설정해야 함
+    MySQL, MongoDB 등
+백엔드는 서버와 db를 프로그래밍 한다.
+request(요청) : 프론트엔드에서 백엔드로 가는 메시지 (client -> server)
+response(응답) : 백엔드에서 프론트엔드로 가는 메시지 - request와 사이클 이룸
+request 안에 있는 것 : 요청의 type(get post put delete), domain, url path
+domain은 목적지, type과 url path는 request의 종류 나타냄
+API : Application Programming Interface - 서버가 처리할 수 있는 요청
+이름짓기 등 약속 : REST (representational state transfer) - api 만들 때 가장 많이 사용
+    - url path는 명사
+REST API : rest 규칙을 따르는 API
+rest 말고 다른 규칙 : GraphQL - 모든 request를 /graphal로 보냄
+    RPC(remote procedure call) - 상세한 url path 사용
+클라우드 컴퓨팅 : 서버를 빌려 사용하는 것 - aws 등등
+마이크로서비스 : 기능마다 백엔드 코드를 나누는 것 - 기능마다 각각의 백엔드를 갖게 됨
+    - 각 백엔드마다 다른 언어와 db 사용 가능
+어떤 작업을 하냐에 따라 다른 db를 사용해야 빠름
+
+<토스>
+https://youtu.be/edWbHp_k_9Y?si=XPFAZqlF-mCmANaP
+프론트엔드 클린코드 : 명확한 이름, 중복 줄이기, 섬세한 코드 정리 - 유지보수 시간 단축
+하나의 함수에서는 하나의 일만 하도록 만들기.
+클린 코드는 짧은 코드가 아님 - 원하는 로직을 빠르게 찾을 수 있는 코드가 중요함
+    - 응집도, 단일책임, 추상화(세부 구현 단계를 맞추기)
+당장 몰라도 되는 디테일은 뭉쳐도 됨, 핵심 정보는 뭉치면 헷갈림
+선언적 프로그래밍 : 핵심 데이터만 전달받고 세부 구현은 뭉쳐 숨겨두는 스타일
+선언적이 더 좋은 건 아님, 두 방법 모두 유동적으로 사용
+함수 이름 짓기 : 중요 포인트가 모두 담겨 있어야 함
+    나중에 함수에 기능을 추가하면 이름과 다른 기능을 여러 개 하게 되는 일이 발생
+    너무 복잡해지면 한글 써도 괜찮음
+추상화 : 중요한 개념만 prop으로 남기고 컴포넌트화 하는 방법이 있음
+    혹은 개념을 함수명에만 남기고 함수 안에 전부 넣는 방법도 존재
+    추상화 수준이 섞여 있으면 코드 파악이 어려워짐
+
+2022년 하반기부터 RN 사용 시작 - 홈, 혜택, 주식 탭에 사용
+원래 Web 기술 사용하였는데 대체하기 위해 사용
+토스 프론트엔드의 중요 가치 : 사용자 경험, 개발자 경험
+Web 사용했던 이유 : 사용자가 원하는 것 찾기 위해 빠른 배포 주기와 실험 필요
+    - 로딩이 느림
+    - 완전히 화면을 그리기 위해 html, js를 다운로드해야 함 - 네트워크 성능에 의존
+RN은 이미 저장된 JS파일을 참조하기 때문에 네트워크와 무관
+RN은 개발 시스템이 단순함 - 한 개의 JS 파일 빌드
+서버 운영 비용, 배포/롤백 과정 등등이 저렴해짐
+RN 장점 요약 : 빠른 초기 로딩, 짧은 배포 시간, 낮은 인프라 운영 비용
+RN 기술적 어려움 : 서비스별 배포, 빌드 속도 감축, 언어와 플랫폼 다양성, 의존성 관리
+서비스별 배포 : 탭마다 파일을 나누어서 배포해야 함
+    Experiment Over Opinion : 논의를 길게 하지 않고 빨리 런칭하여 데이터 수집 우선시
+    서비스가 다른 서비스에 영향 준다면 확인 과정이 필요하여 처리 속도가 느려짐
+    어려움 : 앱 용량이 커짐 - OS들마다 용량 제한이 있기 때문에 어려움
+        보완 : 각 서비스의 JS 파일을 Shared, Service로 나눔
+            Shared : 모든 서비스가 공유하는 react, RN 등 라이브러리
+            Service : 공유하지 않는 남은 부분
+            이 두 개의 파일을 순서대로 불러옴
+        약한 RN 생태계 : 불충분한 RN 점진적 도입 생태계, 자체 CodePush 구현 필요 등등
+서비스의 빌드 속도 : RN은 페북에서 만든 Metro 번들러 사용 - 느림, 비일관적인 빌드
+    보완 esbuild로 번들러 교체 - 빠름, 어떤 컴퓨터에서도 일관적인 빌드
+언어와 플랫폼 다양성 : 8개 언어, 3개 플랫폼 사용
+    RN : 코어 c++, iOS objC, Android Java + JS, Flow 사용
+    토스 : iOS Swift, Android Kotlin, typescript 사용 
+    테스트 페이지 만들어 해결
+의존성 관리 : Node Resolution Algorithm
+    RN은 node_modules 디렉터리로 대표되는 Node.js 표준 알고리즘에 따라 의존성 설치
+    - 느린 설치 속도, Phantom Dependencies (명시하지 않은 의존성 설치)
+    - 표면상 드러나지는 않지만 이상한 문제 발생시켜 디버깅 어렵게 함
+    해결 : PNPM 대신 Yarn PnP 사용 - 빠른 설치 속도, 엄격한 의존성 관리
+
+프론트엔드 : 디자이너가 만든 작업물 (psd, 스케치 등)을 가지고 페이지를 만들어냄
+    html, css, JavaScript를 무조건 할 줄 알아야 함
+    단점 : 기술이 너무 빠르게 발전 (JS Fatigue) - 마스터하기 어려움 - Webpack, react, graphQL
+    장점 : 내 작업의 시각적 피드백 즉각적으로 얻을 수 있음
+백엔드 : 서버 개발 - 데이터 db에 적재 및 관리, API 제작 및 제공 
+    언어 - 자바 스프링, 루비 온 레일즈, PHP, Node.js
+    큰 그림을 그려야 함
+    장점 : 안정적인 개발 환경 - 장고, 루비, 레일스 발전이 빠르지 않음
+        옵션이 있음 - 자바, 루비, 장고, 파이썬 등등에서 골라서 사용 가능
+    단점 : 유저와의 긴밀한 관계가 없음 - 유저로부터 숨어있음
